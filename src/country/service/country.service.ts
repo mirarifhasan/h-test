@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { Country } from '../dtos/country.dto';
 import { GetCountriesQuery } from '../dtos/get-countries-query.dto';
 import { getName } from 'country-list';
 import { findCommonElements } from 'src/shared/utils';
+import { PutBorderReq } from '../dtos/put-borders.dto';
 
 @Injectable()
 export class CountryService implements OnModuleInit {
@@ -59,7 +60,20 @@ export class CountryService implements OnModuleInit {
 
   getCountry(name: string): Country {
     let country = this.countries.find((c) => c.name.toLowerCase() === name.toLocaleLowerCase());
-    if (!country) throw new NotFoundException('Country not found');
+    if (!country) throw new NotFoundException(`Country not found`);
+    return country;
+  }
+
+  addBorders(name: string, dto: PutBorderReq): Country {
+    let country = this.countries.find((c) => c.name.toLowerCase() === name.toLocaleLowerCase());
+
+    if (!country) throw new NotFoundException(`Country not found`);
+
+    if (country.borders?.length) {
+      throw new ForbiddenException(`Border already exist in ${country.name}`);
+    }
+
+    country.borders = dto.borders;
     return country;
   }
 }
