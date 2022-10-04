@@ -12,10 +12,14 @@ export class CountryService implements OnModuleInit {
   countries: Country[] = [];
 
   onModuleInit() {
-    let jsonData = require('../../../countries.json');
-    jsonData.countries.forEach((c) => {
-      this.countries.push(c);
-    });
+    try {
+      let jsonData = require('../../../countries.json');
+      jsonData.countries.forEach((c) => {
+        this.countries.push(c);
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   getCountries(query: GetCountriesQuery): Country[] {
