@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Put, Query, Req } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, Put, Query, Req } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { GetCountriesQuery } from '../dtos/get-countries-query.dto';
-import { PutBorderReq } from '../dtos/put-borders.dto';
+import { GetCountriesQuery } from '../dtos/req/get-countries-query.dto';
+import { PutBorderReq } from '../dtos/req/put-borders.dto';
+import { PutSubregionReq } from '../dtos/req/put-subregion.dto';
 import { CountryService } from '../service/country.service';
 
 @Controller({ version: '1', path: 'countries' })
@@ -21,9 +22,15 @@ export class CountryController {
     return res;
   }
 
-  @Put(':name')
+  @Put(':name/borders')
   addBorders(@Param('name') name: string, @Body() dto: PutBorderReq) {
     let res = this.countryService.addBorders(name, dto);
+    return res;
+  }
+
+  @Put(':name/subregion')
+  addSubregion(@Param('name') name: string, @Body() dto: PutSubregionReq) {
+    let res = this.countryService.addSubregion(name, dto);
     return res;
   }
 }

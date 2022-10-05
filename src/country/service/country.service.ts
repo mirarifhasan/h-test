@@ -1,9 +1,10 @@
 import { ForbiddenException, Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { Country } from '../dtos/country.dto';
-import { GetCountriesQuery } from '../dtos/get-countries-query.dto';
+import { GetCountriesQuery } from '../dtos/req/get-countries-query.dto';
 import { getName } from 'country-list';
 import { findCommonElements } from 'src/shared/utils';
-import { PutBorderReq } from '../dtos/put-borders.dto';
+import { PutBorderReq } from '../dtos/req/put-borders.dto';
+import { PutSubregionReq } from '../dtos/req/put-subregion.dto';
 
 @Injectable()
 export class CountryService implements OnModuleInit {
@@ -78,6 +79,15 @@ export class CountryService implements OnModuleInit {
     }
 
     country.borders = dto.borders;
+    return country;
+  }
+
+  addSubregion(name: string, dto: PutSubregionReq) {
+    let country = this.countries.find((c) => c.name.toLowerCase() === name.toLocaleLowerCase());
+    if (!country) throw new NotFoundException(`Country not found`);
+
+    country.subregion = dto.subregion;
+
     return country;
   }
 }

@@ -5,6 +5,9 @@
 # Environment files
 .env
 
+# Log file
+logger.txt
+
 # Logs
 logs
 *.log

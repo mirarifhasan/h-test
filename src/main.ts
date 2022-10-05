@@ -29,7 +29,7 @@ async function bootstrap() {
   app.enableCors();
   app.setGlobalPrefix('api', { exclude: [{ path: '', method: RequestMethod.GET }] });
   app.enableVersioning({ type: VersioningType.URI });
-  app.useGlobalInterceptors(new LoggingInterceptor())
+  app.useGlobalInterceptors(new LoggingInterceptor());
 
   await setupSwagger(app, PORT);
 
