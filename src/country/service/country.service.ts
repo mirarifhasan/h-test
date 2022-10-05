@@ -5,6 +5,8 @@ import { getName } from 'country-list';
 import { findCommonElements } from 'src/shared/utils';
 import { PutBorderReq } from '../dtos/req/put-borders.dto';
 import { PutSubregionReq } from '../dtos/req/put-subregion.dto';
+import { GetCountryRes } from '../dtos/res/get-country-res.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class CountryService implements OnModuleInit {
@@ -13,6 +15,10 @@ export class CountryService implements OnModuleInit {
   countries: Country[] = [];
 
   onModuleInit() {
+    this.initiateData();
+  }
+
+  initiateData() {
     try {
       let jsonData = require('../../../countries.json');
       jsonData.countries.forEach((c) => {
@@ -23,7 +29,7 @@ export class CountryService implements OnModuleInit {
     }
   }
 
-  getCountries(query: GetCountriesQuery): Country[] {
+  getCountries(query: GetCountriesQuery): GetCountryRes[] {
     let responseCountries: Country[] = this.countries;
 
     if (query.share_borders_queried_country) {
@@ -49,27 +55,36 @@ export class CountryService implements OnModuleInit {
         .filter((c) => c);
     }
 
-    return responseCountries;
+    return plainToInstance(GetCountryRes, responseCountries, {
+      excludeExtraneousValues: true,
+      enableImplicitConversion: true
+    });
   }
 
-  getBorderSharedCountries(queriedCountry: string): Country[] {
+  getBorderSharedCountries(queriedCountry: string): GetCountryRes[] {
     let country = this.getCountry(queriedCountry);
 
     if (!country.borders) return [];
 
-    return country.borders.map((border) => {
+    let responseCountries = country.borders.map((border) => {
       let countryName = getName(border.substring(0, 2));
       return this.getCountry(countryName);
     });
+
+    return plainToInstance(GetCountryRes, responseCountries, {
+      excludeExtraneousValues: true,
+      enableImplicitConversion: true
+    });
   }
 
-  getCountry(name: string): Country {
+  getCountry(name: string): GetCountryRes {
     let country = this.countries.find((c) => c.name.toLowerCase() === name.toLocaleLowerCase());
     if (!country) throw new NotFoundException(`Country not found`);
-    return country;
+
+    return plainToInstance(GetCountryRes, country, { excludeExtraneousValues: true, enableImplicitConversion: true });
   }
 
-  addBorders(name: string, dto: PutBorderReq): Country {
+  addBorders(name: string, dto: PutBorderReq): GetCountryRes {
     let country = this.countries.find((c) => c.name.toLowerCase() === name.toLocaleLowerCase());
 
     if (!country) throw new NotFoundException(`Country not found`);
@@ -79,15 +94,16 @@ export class CountryService implements OnModuleInit {
     }
 
     country.borders = dto.borders;
-    return country;
+
+    return plainToInstance(GetCountryRes, country, { excludeExtraneousValues: true, enableImplicitConversion: true });
   }
 
-  addSubregion(name: string, dto: PutSubregionReq) {
+  addSubregion(name: string, dto: PutSubregionReq): GetCountryRes {
     let country = this.countries.find((c) => c.name.toLowerCase() === name.toLocaleLowerCase());
     if (!country) throw new NotFoundException(`Country not found`);
 
     country.subregion = dto.subregion;
 
-    return country;
+    return plainToInstance(GetCountryRes, country, { excludeExtraneousValues: true, enableImplicitConversion: true });
   }
 }
