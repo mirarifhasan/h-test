@@ -39,7 +39,7 @@ async function bootstrap() {
     })
   );
 
-  await app.listen(3000);
+  await app.listen(PORT);
   Logger.log(await app.getUrl(), 'App URL');
 }
 bootstrap();
