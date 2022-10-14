@@ -2,6 +2,7 @@ import { Logger, RequestMethod, ValidationPipe, VersioningType } from '@nestjs/c
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { IpCheckInterceptor } from './shared/interceptors/ip-check.interceptor';
 import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
 
 async function setupSwagger(app, port: number) {
@@ -29,6 +30,8 @@ async function bootstrap() {
   app.enableCors();
   app.setGlobalPrefix('api', { exclude: [{ path: '', method: RequestMethod.GET }] });
   app.enableVersioning({ type: VersioningType.URI });
+
+  app.useGlobalInterceptors(new IpCheckInterceptor());
   app.useGlobalInterceptors(new LoggingInterceptor());
 
   await setupSwagger(app, PORT);
